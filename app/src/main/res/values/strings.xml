@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">GF Tools Noti plugin</string>
+    <string name="target_cn_uc" translatable="false">com.digitalsky.girlsfrontline.cn.uc</string>
+    <string name="target_cn_bili" translatable="false">com.digitalsky.girlsfrontline.cn.bili</string>
+    <string name="target_en" translatable="false">com.sunborn.girlsfrontline.en</string>
+    <string name="target_jp" translatable="false">com.sunborn.girlsfrontline.jp</string>
+    <string name="target_tw" translatable="false">tw.txwy.and.snqx</string>
+    <string name="target_kr" translatable="false">kr.txwy.and.snqx</string>
+
+    <string name="notidep">소전 알람 읽기 권한</string>
+    <string name="maindep">이 기기(또는 가상OS)에서의 알람을 소전툴즈가 설치된 기기로 자동으로 전송하는 플러그인입니다.</string>
+    <string name="onoff">Service On/off</string>
+    <string name="UserId">User Id : Unknown</string>
+    <string name ="GLogin">Google에 로그인</string>
+    <string name="GLogout">Google에 로그아웃</string>
+</resources>
