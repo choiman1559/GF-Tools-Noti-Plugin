@@ -40,11 +40,11 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        /*
+
         if(isPackageInstalled("com.fqxd.gftools", getPackageManager())) {
             Toast.makeText(this, "소전툴즈가 설치되어 있는 기기에서는 사용이 불가합니다!", Toast.LENGTH_SHORT).show();
             finish();
-        }*/
+        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

@@ -13,4 +13,6 @@
     <string name="UserId">User Id : Unknown</string>
     <string name ="GLogin">Google에 로그인</string>
     <string name="GLogout">Google에 로그아웃</string>
+
+    <string name="serverKey">AAAAd2xYJoc:APA91bEI-KASWZ7hQoHTsKJQhFshvUnyBEnTwSPGeD9VGJmATJvpE2r4_2qaP0D8Tk38hkbTLqmATp5if7roxcWrOKWr9Q7q9RBxK_ORSM7gGLZos8VcP9QcK9tHnDSv7OYJRTlclwTp</string>
 </resources>

@@ -6,17 +6,23 @@ import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.crashlytics.android.Crashlytics.TAG;
 
 public class NotiListenerClass extends NotificationListenerService {
     @Override
@@ -24,21 +30,74 @@ public class NotiListenerClass extends NotificationListenerService {
         super.onNotificationPosted(sbn);
         if(NotiListenerClass.this.getSharedPreferences("Prefs",MODE_PRIVATE).getBoolean("Enabled",false)) {
             if(isGF(sbn.getPackageName())) {
+
+                Notification notification = sbn.getNotification();
+                Bundle extra = notification.extras;
+
                 addData(sbn,NotiListenerClass.this);
+                String TOPIC = "/topics/" + getSharedPreferences("Prefs",MODE_PRIVATE).getString("uid","");
+                String TITLE = extra.getString(Notification.EXTRA_TITLE);
+                String TEXT = extra.getCharSequence(Notification.EXTRA_TEXT).toString();
+
+                JSONObject notificationHead = new JSONObject();
+                JSONObject notifcationBody = new JSONObject();
+                try {
+                    notifcationBody.put("title", TITLE);
+                    notifcationBody.put("message", TEXT);
+
+                    notificationHead.put("to", TOPIC);
+                    notificationHead.put("data", notifcationBody);
+                } catch (JSONException e) {
+                    Log.e("Noti", "onCreate: " + e.getMessage() );
+                }
+                sendNotification(notificationHead);
             }
         }
     }
 
     public boolean isGF(String Packagename) {
         if(Packagename.equals(getString(R.string.target_cn_bili))) return true;
-        else if(Packagename.equals(getString(R.string.target_cn_uc))) return true;
-        else if(Packagename.equals(getString(R.string.target_en))) return true;
-        else if(Packagename.equals(getString(R.string.target_jp))) return true;
-        else if(Packagename.equals(getString(R.string.target_kr))) return true;
-        else if(Packagename.equals(getString(R.string.target_tw))) return true;
-        else return false;
+        if(Packagename.equals(getString(R.string.target_cn_uc))) return true;
+        if(Packagename.equals(getString(R.string.target_en))) return true;
+        if(Packagename.equals(getString(R.string.target_jp))) return true;
+        if(Packagename.equals(getString(R.string.target_kr))) return true;
+        if(Packagename.equals(getString(R.string.target_tw))) return true;
+        if(BuildConfig.DEBUG && Packagename.equals("xyz.notitest.noti")) return true;
+        return false;
     }
 
+    private void sendNotification(JSONObject notification) {
+        final String FCM_API = "https://fcm.googleapis.com/fcm/send";
+        final String serverKey = "key=" + getString(R.string.serverKey);
+        final String contentType = "application/json";
+        final String TAG = "NOTIFICATION TAG";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: " + response.toString());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(NotiListenerClass.this, "Request error", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "onErrorResponse: Didn't work");
+                    }
+                }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Authorization", serverKey);
+                params.put("Content-Type", contentType);
+                return params;
+            }
+        };
+        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
+
+    @Deprecated
     private void addData(StatusBarNotification sbn, Context context) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> data = new HashMap<>();
@@ -57,13 +116,13 @@ public class NotiListenerClass extends NotificationListenerService {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                        Log.d("Noti", "DocumentSnapshot successfully written!");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
+                        Log.w("Noti", "Error writing document", e);
                     }
                 });
     }
