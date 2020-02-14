@@ -27,6 +27,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Set;
 
@@ -41,7 +42,7 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        if(isPackageInstalled("com.fqxd.gftools", getPackageManager())) {
+        if(!BuildConfig.DEBUG && isPackageInstalled("com.fqxd.gftools", getPackageManager())) {
             Toast.makeText(this, "소전툴즈가 설치되어 있는 기기에서는 사용이 불가합니다!", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -74,7 +75,8 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
                 Set<String> sets = NotificationManagerCompat.getEnabledListenerPackages(SettingActivity.this);
                 if (sets.contains(getPackageName())) {
                     prefs.edit().putBoolean("Enabled", onoff.isChecked()).apply();
-
+                    if(!getSharedPreferences("Prefs",MODE_PRIVATE).getString("uid","").equals(""))
+                        FirebaseMessaging.getInstance().subscribeToTopic(getSharedPreferences("Prefs",MODE_PRIVATE).getString("uid","") + "_receiver");
                 } else {
                     Toast.makeText(SettingActivity.this, "이 기능을 사용하기 위해 알람 엑세스 권한이 필요합니다!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));

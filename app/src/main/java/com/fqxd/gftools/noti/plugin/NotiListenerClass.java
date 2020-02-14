@@ -38,12 +38,14 @@ public class NotiListenerClass extends NotificationListenerService {
                 String TOPIC = "/topics/" + getSharedPreferences("Prefs",MODE_PRIVATE).getString("uid","");
                 String TITLE = extra.getString(Notification.EXTRA_TITLE);
                 String TEXT = extra.getCharSequence(Notification.EXTRA_TEXT).toString();
+                String Package = "" + sbn.getPackageName();
 
                 JSONObject notificationHead = new JSONObject();
                 JSONObject notifcationBody = new JSONObject();
                 try {
                     notifcationBody.put("title", TITLE);
                     notifcationBody.put("message", TEXT);
+                    notifcationBody.put("package",Package);
 
                     notificationHead.put("to", TOPIC);
                     notificationHead.put("data", notifcationBody);
