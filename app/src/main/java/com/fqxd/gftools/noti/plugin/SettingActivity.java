@@ -5,7 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -73,17 +76,22 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
         onoff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                Set<String> sets = NotificationManagerCompat.getEnabledListenerPackages(SettingActivity.this);
-                if (sets.contains(getPackageName())) {
-                    prefs.edit().putBoolean("Enabled", onoff.isChecked()).apply();
-                    if(!getSharedPreferences("Prefs",MODE_PRIVATE).getString("uid","").equals(""))
-                        FirebaseMessaging.getInstance().subscribeToTopic(getSharedPreferences("Prefs",MODE_PRIVATE).getString("uid","") + "_receiver");
-                } else {
-                    Toast.makeText(SettingActivity.this, "이 기능을 사용하기 위해 알람 엑세스 권한이 필요합니다!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
-                    prefs.edit().putBoolean("Enabled", false).apply();
+                if(onoff.isChecked() && Build.VERSION.SDK_INT > 28 && !Settings.canDrawOverlays(SettingActivity.this)) {
+                    Toast.makeText(SettingActivity.this, "이 기능을 사용하기 위해 다른 앱 위에 그리기 권한이 필요합니다!", Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     onoff.setChecked(false);
+                } else {
+                    Set<String> sets = NotificationManagerCompat.getEnabledListenerPackages(SettingActivity.this);
+                    if (sets.contains(getPackageName())) {
+                        prefs.edit().putBoolean("Enabled", onoff.isChecked()).apply();
+                        if (!getSharedPreferences("Prefs", MODE_PRIVATE).getString("uid", "").equals(""))
+                            FirebaseMessaging.getInstance().subscribeToTopic(getSharedPreferences("Prefs", MODE_PRIVATE).getString("uid", "") + "_receiver");
+                    } else {
+                        Toast.makeText(SettingActivity.this, "이 기능을 사용하기 위해 알람 엑세스 권한이 필요합니다!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+                        prefs.edit().putBoolean("Enabled", false).apply();
+                        onoff.setChecked(false);
+                    }
                 }
             }
         });
