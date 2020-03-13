@@ -64,8 +64,7 @@ public class NotiListenerClass extends NotificationListenerService {
         if(Packagename.equals(getString(R.string.target_jp))) return true;
         if(Packagename.equals(getString(R.string.target_kr))) return true;
         if(Packagename.equals(getString(R.string.target_tw))) return true;
-        if(BuildConfig.DEBUG && Packagename.equals("xyz.notitest.noti")) return true;
-        return false;
+        return (BuildConfig.DEBUG && Packagename.equals("xyz.notitest.noti"));
     }
 
     private void sendNotification(JSONObject notification) {
@@ -84,7 +83,7 @@ public class NotiListenerClass extends NotificationListenerService {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(NotiListenerClass.this, "Request error", Toast.LENGTH_LONG).show();
+                        Toast.makeText(NotiListenerClass.this, "알람 전송 실패! 인터넷 환경을 확인해주세요!", Toast.LENGTH_LONG).show();
                         Log.i(TAG, "onErrorResponse: Didn't work");
                     }
                 }){

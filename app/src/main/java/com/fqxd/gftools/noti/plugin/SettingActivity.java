@@ -1,8 +1,10 @@
 package com.fqxd.gftools.noti.plugin;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -99,10 +101,15 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
         glogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (prefs.getString("uid", "").equals("")) {
+                ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                assert cm.getActiveNetworkInfo() != null;
+                Boolean isOnline = cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+
+                if (prefs.getString("uid", "").equals("") && isOnline) {
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                     startActivityForResult(signInIntent, RC_SIGN_IN);
-                } else signOut(onoff,prefs);
+                } else if(isOnline) signOut(onoff,prefs);
+                else Toast.makeText(SettingActivity.this,"Check internet and try again!",Toast.LENGTH_LONG).show();
             }
         });
     }
