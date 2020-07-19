@@ -85,7 +85,7 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
                     if (sets.contains(getPackageName())) {
                         prefs.edit().putBoolean("Enabled", onoff.isChecked()).apply();
                         if (!getSharedPreferences("Prefs", MODE_PRIVATE).getString("uid", "").equals(""))
-                            FirebaseMessaging.getInstance().subscribeToTopic(getSharedPreferences("Prefs", MODE_PRIVATE).getString("uid", "") + "_receiver");
+                            FirebaseMessaging.getInstance().subscribeToTopic(getSharedPreferences("Prefs", MODE_PRIVATE).getString("uid", ""));
                     } else {
                         Toast.makeText(SettingActivity.this, "이 기능을 사용하기 위해 알람 엑세스 권한이 필요합니다!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
@@ -111,7 +111,7 @@ public class SettingActivity extends AppCompatActivity implements GoogleApiClien
             public void onClick(View v) {
                 ConnectivityManager cm = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
                 assert cm.getActiveNetworkInfo() != null;
-                Boolean isOnline = cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+                boolean isOnline = cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
 
                 if (prefs.getString("uid", "").equals("") && isOnline) {
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
