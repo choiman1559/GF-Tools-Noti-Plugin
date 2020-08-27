@@ -14,7 +14,7 @@
             android:gravity="center"
             android:text="@string/maindep" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/Enable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
